@@ -3,6 +3,9 @@ package com.example.composebasicscodelab
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,7 +37,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.tertiaryContainer
                 ) {
-                    Greeting("Android")
+                    MyApp()
                 }
             }
         }
@@ -67,7 +70,15 @@ fun Greetings(
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     var expanded = remember { mutableStateOf(false) }
-    var extraPadding = if(expanded.value) 48.dp else 0.dp
+    val extraPadding by animateDpAsState(
+        targetValue = if(expanded.value) 48.dp else 0.dp,
+        label = "padding",
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+
     Surface(
         color = MaterialTheme.colorScheme.primary,
         modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)
@@ -75,7 +86,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         Row(modifier = Modifier.padding(24.dp)) {
             Column(modifier = modifier
                 .weight(1f)
-                .padding(bottom = extraPadding)) {
+                .padding(bottom = extraPadding.coerceAtLeast(0.dp))) {
                 Text("Hello")
                 Text(name)
             }
